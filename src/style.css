@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+pre, code { font-family: ui-monospace, Menlo, Consolas, monospace; }
+.slide { display: none; }
+.slide.on { display: block; }
+.cell { transition: all .3s; }

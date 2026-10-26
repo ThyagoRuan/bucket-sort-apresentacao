@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bucket Sort – Algoritmos e Estruturas de Dados</title>
+  <script type="module" crossorigin src="/assets/index-DIa5XMmQ.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Bp7dJXDF.css">
+</head>
+<body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen">
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <div class="flex items-center justify-between mb-4 text-sm text-slate-500 dark:text-slate-400">
+    <span>IFPE Campus Igarassu · Algoritmos e Estruturas de Dados</span>
+    <span id="counter"></span>
+  </div>
+
+  <!-- 1 -->
+  <section class="slide on">
+    <h1 class="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-10">Bucket Sort</h1>
+    <p class="mt-3 text-xl">Ordenação por distribuição em “baldes”</p>
+    <p class="mt-8 text-slate-500 dark:text-slate-400">Apresentação sobre algoritmos de ordenação · TypeScript</p>
+    <p class="mt-2 text-slate-500 dark:text-slate-400">Use as setas ← → ou os botões abaixo para navegar.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <h2 class="text-3xl font-bold mb-4">Ideia base</h2>
+    <ol class="space-y-3 text-lg list-decimal pl-6">
+      <li><b>Distribuir:</b> cada elemento vai para um balde conforme a sua faixa de valores.</li>
+      <li><b>Ordenar:</b> cada balde é ordenado separadamente (geralmente com Insertion Sort).</li>
+      <li><b>Concatenar:</b> os baldes, já em ordem, são juntados em um único vetor.</li>
+    </ol>
+    <p class="mt-6 p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800">
+      É um algoritmo <b>não comparativo</b> na etapa de distribuição: o balde é calculado por uma fórmula, sem comparar elementos entre si.
+    </p>
+    <p class="mt-4 text-slate-600 dark:text-slate-300">Funciona melhor quando os dados estão distribuídos de forma uniforme no intervalo.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <h2 class="text-3xl font-bold mb-4">Complexidade</h2>
+    <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <tbody>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><th class="py-2 pr-4">Melhor caso</th><td>O(n + k)</td></tr>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><th class="py-2 pr-4">Caso médio</th><td>O(n + k) com distribuição uniforme</td></tr>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><th class="py-2 pr-4">Pior caso</th><td>O(n²) se tudo cair no mesmo balde (com Insertion Sort)</td></tr>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><th class="py-2 pr-4">Espaço extra</th><td>O(n + k)</td></tr>
+        <tr><th class="py-2 pr-4">Estável?</th><td>Sim, se o algoritmo usado nos baldes for estável</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="mt-4 text-slate-600 dark:text-slate-300">n = quantidade de elementos · k = quantidade de baldes</p>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <h2 class="text-3xl font-bold mb-3">Código em TypeScript</h2>
+    <div class="overflow-x-auto rounded-lg bg-slate-900 text-slate-100 p-4 text-sm leading-relaxed">
+<pre>function bucketSort(arr: number[], bucketCount = 5): number[] {
+  if (arr.length &lt;= 1) return [...arr];
+
+  const min = Math.min(...arr);
+  const max = Math.max(...arr);
+  const range = (max - min + 1) / bucketCount;   // tamanho da faixa
+
+  // 1. Distribuir
+  const buckets: number[][] = Array.from({ length: bucketCount }, () =&gt; []);
+  for (const value of arr) {
+    const i = Math.floor((value - min) / range);
+    buckets[i].push(value);
+  }
+
+  // 2. Ordenar cada balde e 3. Concatenar
+  return buckets.flatMap(insertionSort);
+}
+
+function insertionSort(bucket: number[]): number[] {
+  const a = [...bucket];
+  for (let i = 1; i &lt; a.length; i++) {
+    const key = a[i];
+    let j = i - 1;
+    while (j &gt;= 0 &amp;&amp; a[j] &gt; key) { a[j + 1] = a[j]; j--; }
+    a[j + 1] = key;
+  }
+  return a;
+}
+
+console.log(bucketSort([29, 25, 3, 49, 9, 37, 21, 43]));
+// [3, 9, 21, 25, 29, 37, 43, 49]</pre>
+    </div>
+    <ul class="mt-3 text-sm space-y-1 text-slate-600 dark:text-slate-300">
+      <li><code>range</code> define a largura de cada faixa; <code>(value - min) / range</code> dá o índice do balde.</li>
+      <li>O <code>+ 1</code> garante que o maior valor não caia fora do último balde.</li>
+    </ul>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <h2 class="text-3xl font-bold mb-1">Animação passo a passo</h2>
+    <p id="msg" class="min-h-[3rem] mt-2 text-emerald-700 dark:text-emerald-300 font-medium"></p>
+    <div class="mt-2 text-xs uppercase tracking-wide text-slate-500">Vetor de entrada</div>
+    <div id="input" class="flex flex-wrap gap-2 mt-1"></div>
+    <div class="mt-4 text-xs uppercase tracking-wide text-slate-500">Baldes</div>
+    <div id="buckets" class="grid grid-cols-5 gap-2 mt-1"></div>
+    <div class="mt-4 text-xs uppercase tracking-wide text-slate-500">Resultado</div>
+    <div id="output" class="flex flex-wrap gap-2 mt-1 min-h-[2.5rem]"></div>
+    <div class="flex flex-wrap gap-2 mt-5">
+      <button id="bPrev" class="px-3 py-2 rounded bg-slate-200 dark:bg-slate-700">◀ Passo</button>
+      <button id="bNext" class="px-3 py-2 rounded bg-emerald-600 text-white">Passo ▶</button>
+      <button id="bPlay" class="px-3 py-2 rounded bg-slate-200 dark:bg-slate-700">Auto ▶</button>
+      <button id="bNew" class="px-3 py-2 rounded bg-slate-200 dark:bg-slate-700">Novo vetor</button>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <h2 class="text-3xl font-bold mb-4">Comparação com outros algoritmos</h2>
+    <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm border-collapse">
+      <thead><tr class="border-b-2 border-slate-300 dark:border-slate-600">
+        <th class="py-2 pr-3">Algoritmo</th><th class="pr-3">Médio</th><th class="pr-3">Pior</th><th class="pr-3">Espaço</th><th>Comparativo?</th></tr></thead>
+      <tbody>
+        <tr class="border-b border-slate-200 dark:border-slate-700 bg-emerald-50 dark:bg-emerald-950"><td class="py-2 pr-3 font-semibold">Bucket Sort</td><td>O(n + k)</td><td>O(n²)</td><td>O(n + k)</td><td>Não*</td></tr>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><td class="py-2 pr-3">Radix Sort</td><td>O(d·(n + k))</td><td>O(d·(n + k))</td><td>O(n + k)</td><td>Não</td></tr>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><td class="py-2 pr-3">Quick Sort</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td><td>Sim</td></tr>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><td class="py-2 pr-3">Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>Sim</td></tr>
+        <tr class="border-b border-slate-200 dark:border-slate-700"><td class="py-2 pr-3">Insertion Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>Sim</td></tr>
+        <tr><td class="py-2 pr-3">Bubble Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>Sim</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="mt-3 text-xs text-slate-500">* Não compara elementos na distribuição, mas ordena os baldes com um algoritmo comparativo. d = número de dígitos.</p>
+    <h3 class="mt-5 font-semibold">Tempo real no seu navegador</h3>
+    <div class="flex flex-wrap items-center gap-3 mt-2">
+      <button id="bBench" class="px-3 py-2 rounded bg-emerald-600 text-white">Rodar com 20.000 números</button>
+      <span id="bench" class="text-sm text-slate-600 dark:text-slate-300"></span>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <h2 class="text-3xl font-bold mb-4">Conclusão</h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="p-4 rounded-lg border border-emerald-300 dark:border-emerald-700">
+        <h3 class="font-semibold text-emerald-700 dark:text-emerald-300">Vantagens</h3>
+        <ul class="list-disc pl-5 mt-2 space-y-1"><li>Muito rápido em dados uniformes</li><li>Fácil de entender e implementar</li><li>Pode ser estável</li></ul>
+      </div>
+      <div class="p-4 rounded-lg border border-rose-300 dark:border-rose-700">
+        <h3 class="font-semibold text-rose-700 dark:text-rose-300">Limitações</h3>
+        <ul class="list-disc pl-5 mt-2 space-y-1"><li>Pior caso quadrático</li><li>Usa memória extra</li><li>Depende da escolha do número de baldes</li></ul>
+      </div>
+    </div>
+    <p class="mt-6 text-lg">Use quando os valores estiverem bem espalhados em um intervalo conhecido, como números reais entre 0 e 1.</p>
+  </section>
+
+  <div class="flex justify-between mt-8">
+    <button id="prev" class="px-4 py-2 rounded bg-slate-200 dark:bg-slate-700">← Anterior</button>
+    <button id="next" class="px-4 py-2 rounded bg-emerald-600 text-white">Próximo →</button>
+  </div>
+</div>
+
+</body>
+</html>
